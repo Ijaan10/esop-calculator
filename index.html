@@ -1,13 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amenitiz — ESOP Calculator</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-sans)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --color-background-primary:#ffffff;
+  --color-background-secondary:#f5f4f0;
+  --color-background-tertiary:#eeede8;
+  --color-text-primary:#1a1a18;
+  --color-text-secondary:#5f5e5a;
+  --color-text-tertiary:#888780;
+  --color-border-tertiary:rgba(0,0,0,0.12);
+  --color-border-secondary:rgba(0,0,0,0.22);
+  --border-radius-md:8px;
+  --border-radius-lg:12px;
+  --font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-mono:'SF Mono','Fira Code',monospace;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --color-background-primary:#1e1e1c;
+    --color-background-secondary:#2a2a28;
+    --color-background-tertiary:#141412;
+    --color-text-primary:#f0efe8;
+    --color-text-secondary:#b4b2a9;
+    --color-text-tertiary:#888780;
+    --color-border-tertiary:rgba(255,255,255,0.10);
+    --color-border-secondary:rgba(255,255,255,0.20);
+  }
+}
+body{font-family:var(--font-sans);background:var(--color-background-tertiary);color:var(--color-text-primary);padding:2rem 1rem;min-height:100vh}
+.outer{max-width:860px;margin:0 auto}
 .wrap{padding:1rem 0}
-.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:8px}
+.hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:12px}
 .hdr-title{font-size:15px;font-weight:500;color:var(--color-text-primary)}
 .hdr-sub{font-size:12px;color:var(--color-text-secondary);margin-top:2px}
-.toggle{display:flex;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);overflow:hidden;background:var(--color-background-secondary)}
-.toggle button{padding:6px 14px;font-size:12px;font-weight:500;border:none;background:transparent;cursor:pointer;color:var(--color-text-secondary);transition:all 0.15s}
-.toggle button.active{background:var(--color-background-primary);color:var(--color-text-primary);border:0.5px solid var(--color-border-secondary)}
+.mode-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%;margin-bottom:1.25rem}
+.mode-btn{border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:10px 12px;text-align:center;cursor:pointer;background:var(--color-background-secondary);transition:all 0.15s}
+.mode-btn.active-new{border-color:#378ADD;background:#E6F1FB}
+.mode-btn.active-refresh{border-color:#0F6E56;background:#E1F5EE}
+.mode-btn .m-label{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.mode-btn.active-new .m-label{color:#0C447C}
+.mode-btn.active-refresh .m-label{color:#085041}
+.mode-btn .m-sub{font-size:10px;color:var(--color-text-tertiary);margin-top:2px}
+.mode-btn.active-new .m-sub{color:#185FA5}
+.mode-btn.active-refresh .m-sub{color:#0F6E56}
 .grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:1rem}
 @media(max-width:600px){.grid{grid-template-columns:1fr}}
 .card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem}
@@ -15,17 +55,21 @@ body{font-family:var(--font-sans)}
 .section{margin-bottom:1.25rem}
 .tier-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .tier-btn{border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 6px;text-align:center;cursor:pointer;background:var(--color-background-secondary);transition:all 0.15s}
-.tier-btn.active{border-color:#378ADD;background:#E6F1FB;color:#0C447C}
+.tier-btn.active{border-color:#378ADD;background:#E6F1FB}
+.tier-btn.active-refresh{border-color:#0F6E56;background:#E1F5EE}
 .tier-btn .t-num{font-size:13px;font-weight:500;color:var(--color-text-primary)}
 .tier-btn.active .t-num{color:#0C447C}
+.tier-btn.active-refresh .t-num{color:#085041}
 .tier-btn .t-depts{font-size:10px;color:var(--color-text-tertiary);margin-top:2px;line-height:1.4}
 .tier-btn.active .t-depts{color:#185FA5}
+.tier-btn.active-refresh .t-depts{color:#0F6E56}
 .level-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .level-btn{border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:6px 4px;text-align:center;cursor:pointer;background:var(--color-background-secondary);transition:all 0.15s;font-size:11px;color:var(--color-text-secondary)}
 .level-btn.active{border-color:#378ADD;background:#E6F1FB;color:#0C447C;font-weight:500}
+.level-btn.active-refresh{border-color:#0F6E56;background:#E1F5EE;color:#085041;font-weight:500}
 .salary-row{display:flex;align-items:center;gap:8px}
 .salary-row span{font-size:13px;color:var(--color-text-secondary);white-space:nowrap}
-.salary-row input{flex:1;min-width:0}
+.salary-row input{flex:1;min-width:0;padding:6px 10px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-primary);font-size:14px;font-family:var(--font-sans)}
 .bench{font-size:11px;color:var(--color-text-tertiary);margin-top:4px}
 .bench b{color:var(--color-text-secondary)}
 .mult-display{display:flex;align-items:center;justify-content:space-between;background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 10px}
@@ -40,24 +84,32 @@ body{font-family:var(--font-sans)}
 .upside-table th{text-align:left;color:var(--color-text-secondary);font-weight:500;padding:4px 8px;border-bottom:0.5px solid var(--color-border-tertiary)}
 .upside-table td{padding:6px 8px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary);font-family:var(--font-mono)}
 .upside-table tr:last-child td{border-bottom:none}
-.upside-table .gain{color:#0F6E56;font-weight:500}
+.upside-table .gain-new{color:#185FA5;font-weight:500}
+.upside-table .gain-refresh{color:#0F6E56;font-weight:500}
 .upside-table .muted{color:var(--color-text-secondary);font-family:var(--font-sans)}
 .footer{margin-top:1rem;font-size:10px;color:var(--color-text-tertiary);line-height:1.5;border-top:0.5px solid var(--color-border-tertiary);padding-top:0.75rem}
 .warn{background:#FAEEDA;border:0.5px solid #FAC775;border-radius:var(--border-radius-md);padding:8px 10px;font-size:11px;color:#633806;margin-bottom:1rem}
 </style>
-
+</head>
+<body>
+<div class="outer">
 <div class="wrap">
 <div class="hdr">
   <div>
     <div class="hdr-title">Amenitiz — ESOP calculator</div>
     <div class="hdr-sub">Based on ESOP_Planning_2025.xlsx</div>
   </div>
-  <div class="toggle">
-    <button class="active" id="btn-new" onclick="setMode('new')">New hire</button>
-    <button id="btn-refresh" onclick="setMode('refresh')">Top talent refresh</button>
+</div>
+<div class="mode-row">
+  <div class="mode-btn active-new" id="btn-new" onclick="setMode('new')">
+    <div class="m-label">New hire</div>
+    <div class="m-sub">Full grant on joining</div>
+  </div>
+  <div class="mode-btn" id="btn-refresh" onclick="setMode('refresh')">
+    <div class="m-label">Top talent refresh</div>
+    <div class="m-sub">30% of new hire grant · annual</div>
   </div>
 </div>
-
 <div class="grid">
 <div class="card">
   <div class="section">
@@ -77,12 +129,10 @@ body{font-family:var(--font-sans)}
       </div>
     </div>
   </div>
-
   <div class="section">
     <div class="label">Seniority level</div>
     <div class="level-grid" id="level-grid"></div>
   </div>
-
   <div class="section">
     <div class="label">Annual gross salary (€)</div>
     <div class="salary-row">
@@ -91,13 +141,11 @@ body{font-family:var(--font-sans)}
     </div>
     <div class="bench" id="bench-hint"></div>
   </div>
-
   <div class="mult-display">
     <div class="mult-label">Multiplier applied</div>
-    <div class="mult-value" id="mult-val">0.25×</div>
+    <div class="mult-value" id="mult-val">25.0%</div>
   </div>
 </div>
-
 <div>
   <div id="warn-box" class="warn" style="display:none">No options granted at this tier/level combination.</div>
   <div class="metrics">
@@ -117,7 +165,6 @@ body{font-family:var(--font-sans)}
       <div class="m-sub">Of 6,926,611 shares</div>
     </div>
   </div>
-
   <div class="card">
     <div class="label" style="margin-bottom:10px">Projected upside at exit (net of €16.38 strike)</div>
     <table class="upside-table">
@@ -132,28 +179,22 @@ body{font-family:var(--font-sans)}
       <tbody id="upside-body"></tbody>
     </table>
   </div>
-
   <div class="footer">
     Company parameters: 6,926,611 shares · €180M current valuation · €16.38 strike · €36.88 FMV reference price · 10% dilution per round. Dilution model: €250M = 0 rounds, €500M = 1, €1bn = 2, €10bn = 2 + double round. Options shown pre-tax. This tool is for indicative purposes only.
   </div>
 </div>
 </div>
 </div>
-
+</div>
 <script>
-const TOTAL_SHARES = 6926611;
-const STRIKE = 16.38;
-const REF_PRICE = 36.881;
-const DILUTION = 0.10;
-
-const EXITS = [
-  {label:'€250M', val:250e6, shares: TOTAL_SHARES},
-  {label:'€500M', val:500e6, shares: TOTAL_SHARES * 1.1},
-  {label:'€1bn',  val:1e9,   shares: TOTAL_SHARES * 1.1 * 1.1},
-  {label:'€10bn', val:10e9,  shares: TOTAL_SHARES * 1.1 * 1.1 * 1.2},
+const TOTAL_SHARES=6926611,STRIKE=16.38,REF_PRICE=36.881;
+const EXITS=[
+  {label:'€250M',val:250e6,shares:TOTAL_SHARES},
+  {label:'€500M',val:500e6,shares:TOTAL_SHARES*1.1},
+  {label:'€1bn', val:1e9,  shares:TOTAL_SHARES*1.1*1.1},
+  {label:'€10bn',val:10e9, shares:TOTAL_SHARES*1.1*1.1*1.2},
 ];
-
-const LEVELS = [
+const LEVELS=[
   {id:'IC1',label:'Junior (IC1)'},
   {id:'IC2',label:'Mid (IC2)'},
   {id:'IC3',label:'Senior (IC3/M3)'},
@@ -161,102 +202,82 @@ const LEVELS = [
   {id:'IC5',label:'Head/Principal (IC5/M5)'},
   {id:'M6', label:'Director (M6)'},
 ];
-
-const MULTS = {
+const MULTS={
   new:{
-    1:{IC1:0.05, IC2:0.10, IC3:0.15, IC4:0.25, IC5:0.50, M6:0.75},
-    2:{IC1:0.075,IC2:0.15, IC3:0.20, IC4:0.30, IC5:0.55, M6:0.75},
-    3:{IC1:0.10, IC2:0.20, IC3:0.30, IC4:0.50, IC5:0.65, M6:0.75},
+    1:{IC1:0.05,IC2:0.10,IC3:0.15,IC4:0.25,IC5:0.50,M6:0.75},
+    2:{IC1:0.075,IC2:0.15,IC3:0.20,IC4:0.30,IC5:0.55,M6:0.75},
+    3:{IC1:0.10,IC2:0.20,IC3:0.30,IC4:0.50,IC5:0.65,M6:0.75},
   },
   refresh:{
-    1:{IC1:0.015, IC2:0.03,  IC3:0.045, IC4:0.075, IC5:0.15,  M6:0.225},
-    2:{IC1:0.0225,IC2:0.045, IC3:0.06,  IC4:0.09,  IC5:0.165, M6:0.225},
-    3:{IC1:0.03,  IC2:0.06,  IC3:0.09,  IC4:0.15,  IC5:0.195, M6:0.225},
+    1:{IC1:0.015,IC2:0.03,IC3:0.045,IC4:0.075,IC5:0.15,M6:0.225},
+    2:{IC1:0.0225,IC2:0.045,IC3:0.06,IC4:0.09,IC5:0.165,M6:0.225},
+    3:{IC1:0.03,IC2:0.06,IC3:0.09,IC4:0.15,IC5:0.195,M6:0.225},
   }
 };
-
-const BENCH = {
-  1:{IC1:null,   IC2:27986,  IC3:32396,  IC4:46317,  IC5:73333,  M6:null},
-  2:{IC1:null,   IC2:36950,  IC3:48347,  IC4:63667,  IC5:90000,  M6:120000},
-  3:{IC1:30000,  IC2:46375,  IC3:68740,  IC4:84250,  IC5:114000, M6:null},
+const BENCH={
+  1:{IC1:null,IC2:27986,IC3:32396,IC4:46317,IC5:73333,M6:null},
+  2:{IC1:null,IC2:36950,IC3:48347,IC4:63667,IC5:90000,M6:120000},
+  3:{IC1:30000,IC2:46375,IC3:68740,IC4:84250,IC5:114000,M6:null},
 };
-
-const ZERO_CELLS = {
-  refresh:{1:{IC1:true, M6:true}, 2:{}, 3:{}}
-};
-
-let mode = 'new', tier = 1, level = 'IC4';
-
+let mode='new',tier=1,level='IC4';
 function fmt(n){return new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0}).format(Math.round(n))}
 function fmtE(n){return '€'+fmt(n)}
-function fmtPct(n){return (n*100).toFixed(4)+'%'}
-
 function setMode(m){
   mode=m;
-  document.getElementById('btn-new').classList.toggle('active',m==='new');
-  document.getElementById('btn-refresh').classList.toggle('active',m==='refresh');
-  calc();
+  const isNew=m==='new';
+  document.getElementById('btn-new').className='mode-btn'+(isNew?' active-new':'');
+  document.getElementById('btn-refresh').className='mode-btn'+(!isNew?' active-refresh':'');
+  updateTierClasses();renderLevels();calc();
 }
-
-function setTier(t){
-  tier=t;
-  [1,2,3].forEach(i=>document.getElementById('t'+i).classList.toggle('active',i===t));
-  renderLevels();
-  calc();
+function updateTierClasses(){
+  const isNew=mode==='new';
+  [1,2,3].forEach(i=>{
+    const el=document.getElementById('t'+i);
+    const isActive=i===tier;
+    el.className='tier-btn'+(isActive?(isNew?' active':' active-refresh'):'');
+  });
 }
-
+function setTier(t){tier=t;updateTierClasses();renderLevels();calc();}
 function renderLevels(){
+  const isNew=mode==='new';
   const grid=document.getElementById('level-grid');
   grid.innerHTML='';
   LEVELS.forEach(l=>{
     const b=document.createElement('div');
-    b.className='level-btn'+(l.id===level?' active':'');
+    const isActive=l.id===level;
+    b.className='level-btn'+(isActive?(isNew?' active':' active-refresh'):'');
     b.textContent=l.label;
     b.onclick=()=>{level=l.id;renderLevels();calc();};
     grid.appendChild(b);
   });
 }
-
 function calc(){
   const salary=parseFloat(document.getElementById('salary').value)||0;
-  const multTable=MULTS[mode][tier];
-  const mult=multTable[level];
+  const mult=MULTS[mode][tier][level];
   const grant=salary*mult;
   const opts=Math.floor(grant/REF_PRICE);
-
-  const isZero= opts===0 || grant===0;
-  document.getElementById('warn-box').style.display = isZero&&salary>0 ? 'block':'none';
-
+  const isNew=mode==='new';
+  document.getElementById('warn-box').style.display=(opts===0&&salary>0)?'block':'none';
   document.getElementById('mult-val').textContent=(mult*100).toFixed(1)+'%';
   document.getElementById('m-grant').textContent=fmtE(grant);
   document.getElementById('m-opts').textContent=fmt(opts);
-  document.getElementById('m-pct').textContent=fmtPct(opts/TOTAL_SHARES);
-
+  document.getElementById('m-pct').textContent=(opts/TOTAL_SHARES*100).toFixed(4)+'%';
   const bench=BENCH[tier][level];
   const hint=document.getElementById('bench-hint');
-  if(bench){
-    hint.innerHTML='Tier '+tier+' benchmark: <b>'+fmtE(bench)+'</b>';
-  } else {
-    hint.textContent='No benchmark data for this tier/level';
-  }
-
+  hint.innerHTML=bench?'Tier '+tier+' benchmark: <b>'+fmtE(bench)+'</b>':'No benchmark for this tier/level';
   const tbody=document.getElementById('upside-body');
   tbody.innerHTML='';
   EXITS.forEach(ex=>{
     const pps=ex.val/ex.shares;
     const upside=opts*(pps-STRIKE);
     const mult2=upside/grant;
+    const gainClass=isNew?'gain-new':'gain-refresh';
     const tr=document.createElement('tr');
-    tr.innerHTML=`
-      <td>${ex.label}</td>
-      <td class="muted">${fmtE(pps)}</td>
-      <td class="${upside>0?'gain':''}">${upside>0?fmtE(upside):'—'}</td>
-      <td class="muted">${upside>0&&grant>0?mult2.toFixed(1)+'×':'—'}</td>
-    `;
+    tr.innerHTML=`<td>${ex.label}</td><td class="muted">${fmtE(pps)}</td><td class="${upside>0?gainClass:''}">${upside>0?fmtE(upside):'—'}</td><td class="muted">${upside>0&&grant>0?mult2.toFixed(1)+'×':'—'}</td>`;
     tbody.appendChild(tr);
   });
 }
-
-renderLevels();
-calc();
+updateTierClasses();renderLevels();calc();
 </script>
+</body>
+</html>
