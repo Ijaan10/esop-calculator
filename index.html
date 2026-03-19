@@ -32,6 +32,69 @@
     --color-border-secondary:rgba(255,255,255,0.20);
   }
 }
+
+/* ── LOGIN GATE ── */
+#gate{
+  position:fixed;inset:0;z-index:1000;
+  background:#1A3A8A;
+  display:flex;align-items:center;justify-content:center;padding:24px;
+}
+#gate.hidden{display:none;}
+.gate-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.gate-blob{position:absolute;border-radius:50%;background:rgba(255,255,255,0.04);}
+.gb1{width:400px;height:320px;top:-80px;left:-60px;border-radius:60% 40% 70% 30%;}
+.gb2{width:280px;height:220px;bottom:-40px;right:-40px;border-radius:40% 60% 30% 70%;}
+.gb3{width:160px;height:160px;top:40%;left:60%;border-radius:50%;background:rgba(55,138,221,0.08);}
+.gate-deco-tl{position:absolute;top:32px;left:32px;opacity:0.2;}
+.gate-deco-br{position:absolute;bottom:32px;right:32px;opacity:0.15;}
+.gate-card{
+  position:relative;z-index:1;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:20px;
+  padding:40px 36px 36px;
+  width:100%;max-width:400px;
+  backdrop-filter:blur(12px);
+  animation:gateIn .4s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes gateIn{
+  from{opacity:0;transform:translateY(16px) scale(.98);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+.gate-logo{font-size:18px;font-weight:300;color:#fff;letter-spacing:-.01em;margin-bottom:4px;font-family:var(--font-sans);}
+.gate-title{font-size:22px;font-weight:500;color:#fff;margin-bottom:6px;line-height:1.2;font-family:var(--font-sans);}
+.gate-sub{font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:28px;line-height:1.5;font-family:var(--font-sans);}
+.gate-field{margin-bottom:14px;}
+.gate-label{display:block;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,0.5);margin-bottom:6px;font-family:var(--font-sans);}
+.gate-input{
+  width:100%;padding:11px 14px;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:10px;
+  font-family:var(--font-sans);font-size:14px;color:#fff;
+  outline:none;transition:border-color .15s,background .15s;
+}
+.gate-input::placeholder{color:rgba(255,255,255,0.3);}
+.gate-input:focus{border-color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.12);}
+.gate-input.error{border-color:#F08080;}
+.gate-error{font-size:12px;color:#F08080;margin-top:8px;min-height:18px;display:flex;align-items:center;gap:5px;font-family:var(--font-sans);}
+.gate-error::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:#F08080;flex-shrink:0;}
+.gate-error:empty{display:none;}
+.gate-error:empty::before{display:none;}
+.gate-btn{
+  width:100%;margin-top:20px;padding:13px;
+  background:#378ADD;border:none;border-radius:10px;
+  font-family:var(--font-sans);font-size:14px;font-weight:500;
+  color:#fff;cursor:pointer;transition:background .15s,transform .1s;
+}
+.gate-btn:hover{background:#2D58B8;}
+.gate-btn:active{transform:scale(.99);}
+.gate-hint{margin-top:16px;text-align:center;font-size:11.5px;color:rgba(255,255,255,0.3);line-height:1.5;font-family:var(--font-sans);}
+
+/* ── APP ── */
+#app{display:none;}
+#app.visible{display:block;}
+
 body{font-family:var(--font-sans);background:var(--color-background-tertiary);color:var(--color-text-primary);padding:2rem 1rem;min-height:100vh}
 .outer{max-width:860px;margin:0 auto}
 .wrap{padding:1rem 0}
@@ -92,6 +155,41 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary);co
 </style>
 </head>
 <body>
+
+<!-- ── LOGIN GATE ── -->
+<div id="gate">
+  <div class="gate-bg">
+    <div class="gate-blob gb1"></div>
+    <div class="gate-blob gb2"></div>
+    <div class="gate-blob gb3"></div>
+    <svg class="gate-deco-tl" width="48" height="48" viewBox="0 0 48 48" fill="none">
+      <path d="M24 3 L26 22 L45 24 L26 26 L24 45 L22 26 L3 24 L22 22 Z" stroke="#378ADD" stroke-width="1" fill="none"/>
+    </svg>
+    <svg class="gate-deco-br" width="80" height="40" viewBox="0 0 80 40" fill="none">
+      <path d="M4 20 Q20 4 40 20 Q60 36 76 20" stroke="#378ADD" stroke-width="1" fill="none"/>
+      <path d="M12 28 Q28 12 48 28" stroke="#378ADD" stroke-width="0.8" fill="none" opacity="0.5"/>
+    </svg>
+  </div>
+  <div class="gate-card">
+    <div class="gate-logo">amenitiz</div>
+    <div class="gate-title">ESOP Calculator</div>
+    <div class="gate-sub">Sign in with your Amenitiz email to access the equity calculator.</div>
+    <div class="gate-field">
+      <label class="gate-label" for="gate-email">Work email</label>
+      <input class="gate-input" type="email" id="gate-email" placeholder="you@amenitiz.com" autocomplete="email">
+    </div>
+    <div class="gate-field">
+      <label class="gate-label" for="gate-password">Password</label>
+      <input class="gate-input" type="password" id="gate-password" placeholder="••••••••••••" autocomplete="current-password">
+    </div>
+    <div class="gate-error" id="gate-error"></div>
+    <button class="gate-btn" id="gate-submit">Access ESOP Calculator</button>
+    <div class="gate-hint">Access restricted to @amenitiz.com accounts</div>
+  </div>
+</div>
+
+<!-- ── APP ── -->
+<div id="app">
 <div class="outer">
 <div class="wrap">
 <div class="hdr">
@@ -100,6 +198,7 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary);co
     <div class="hdr-sub">Based on ESOP_Planning_2025.xlsx</div>
   </div>
 </div>
+
 <div class="mode-row">
   <div class="mode-btn active-new" id="btn-new" onclick="setMode('new')">
     <div class="m-label">New hire</div>
@@ -110,6 +209,7 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary);co
     <div class="m-sub">30% of new hire grant · annual</div>
   </div>
 </div>
+
 <div class="grid">
 <div class="card">
   <div class="section">
@@ -146,6 +246,7 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary);co
     <div class="mult-value" id="mult-val">25.0%</div>
   </div>
 </div>
+
 <div>
   <div id="warn-box" class="warn" style="display:none">No options granted at this tier/level combination.</div>
   <div class="metrics">
@@ -186,7 +287,60 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary);co
 </div>
 </div>
 </div>
+</div>
+
 <script>
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+const PASS='Passionateservice';
+const DOMAIN='@amenitiz.com';
+const SESSION_KEY='esop_auth';
+
+function checkSession(){return sessionStorage.getItem(SESSION_KEY)==='1';}
+function unlock(){
+  sessionStorage.setItem(SESSION_KEY,'1');
+  document.getElementById('gate').classList.add('hidden');
+  document.getElementById('app').classList.add('visible');
+}
+function lock(){
+  sessionStorage.removeItem(SESSION_KEY);
+  document.getElementById('gate').classList.remove('hidden');
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('gate-email').value='';
+  document.getElementById('gate-password').value='';
+  document.getElementById('gate-error').textContent='';
+}
+
+document.getElementById('gate-submit').addEventListener('click',function(){
+  const email=document.getElementById('gate-email').value.trim().toLowerCase();
+  const pass=document.getElementById('gate-password').value;
+  const errEl=document.getElementById('gate-error');
+  const emailEl=document.getElementById('gate-email');
+  const passEl=document.getElementById('gate-password');
+  emailEl.classList.remove('error');
+  passEl.classList.remove('error');
+  errEl.textContent='';
+  if(!email.endsWith(DOMAIN)){
+    emailEl.classList.add('error');
+    errEl.textContent='Please use your @amenitiz.com email address.';
+    return;
+  }
+  if(pass!==PASS){
+    passEl.classList.add('error');
+    errEl.textContent='Incorrect password. Please try again.';
+    return;
+  }
+  unlock();
+});
+
+['gate-email','gate-password'].forEach(id=>{
+  document.getElementById(id).addEventListener('keydown',function(e){
+    if(e.key==='Enter') document.getElementById('gate-submit').click();
+  });
+});
+
+if(checkSession()) unlock();
+
+// ── CALCULATOR ────────────────────────────────────────────────────────────────
 const TOTAL_SHARES=6926611,STRIKE=16.38,REF_PRICE=36.881;
 const EXITS=[
   {label:'€250M',val:250e6,shares:TOTAL_SHARES},
